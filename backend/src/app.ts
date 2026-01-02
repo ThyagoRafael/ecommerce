@@ -1,4 +1,6 @@
 import express from "express";
+import { routes } from "./routes/index.js";
+import { errorMiddleware } from "./middlewares/error.middleware.js";
 
 class App {
 	server: express.Express;
@@ -7,6 +9,7 @@ class App {
 		this.server = express();
 		this.middlewares();
 		this.routes();
+		this.error();
 	}
 
 	middlewares() {
@@ -14,9 +17,11 @@ class App {
 	}
 
 	routes() {
-		this.server.use("/", (req, res) => {
-			res.json("Hello world");
-		});
+		this.server.use("/api", routes);
+	}
+
+	error() {
+		this.server.use(errorMiddleware);
 	}
 }
 
