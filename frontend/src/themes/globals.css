@@ -5,10 +5,31 @@
 	font-family: Roboto, sans-serif;
 }
 
+:root {
+	--primary-color: #f0c9b3;
+	--light-primary-color: #f7d8c6;
+	--dark-primary-color: #d6a68b;
+
+	--secondary-color: #fff0df;
+	--light-secondary-color: #fff2e3;
+	--dark-secondary-color: #f7e5d0;
+
+	--terciary-color: #b4aaa9;
+	--light-terciary-color: #b8b6b6;
+	--dark-terciary-color: #9c8583;
+
+	--light-color: #f8fafd;
+	--dark-color: #121212;
+
+	--success-color: #2dd964;
+	--danger-color: #e84d50;
+}
+
 html,
 body,
 #root {
 	height: 100%;
+	background-color: var(--light-color);
 }
 
 img {
