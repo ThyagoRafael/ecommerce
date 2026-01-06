@@ -1,0 +1,45 @@
+.container {
+	background-color: var(--secondary-color);
+	border-radius: 0.5rem;
+
+	padding: 2rem;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	width: 100%;
+	max-width: 300px;
+}
+
+.title {
+	font-size: 1.5rem;
+	margin-bottom: 3.25rem;
+}
+
+.form {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+
+	width: 100%;
+}
+
+.actions {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+}
+
+.action-paragraph {
+	font-size: 0.875rem;
+}
+
+.action-paragraph a {
+	font-weight: bold;
+}
+
+.action-paragraph a:hover {
+	text-decoration: underline;
+}
