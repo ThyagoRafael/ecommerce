@@ -1,0 +1,18 @@
+.button {
+	width: 100%;
+	padding: 0.5rem 0;
+
+	font-size: 1rem;
+
+	border-radius: 0.5rem;
+	border: none;
+
+	background-color: var(--primary-color);
+
+	cursor: pointer;
+	transition: background-color 0.2s linear;
+}
+
+.button:hover {
+	background-color: var(--dark-primary-color);
+}
