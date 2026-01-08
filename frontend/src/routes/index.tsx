@@ -18,7 +18,7 @@ export default function Router() {
 					element={<Login />}
 				/>
 				<Route
-					path="register"
+					path="cadastro"
 					element={<Register />}
 				/>
 			</Route>
