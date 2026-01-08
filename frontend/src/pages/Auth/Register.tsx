@@ -1,30 +1,58 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Field from "../../components/form/Field";
 import Button from "../../components/form/Button";
-import type { FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import styles from "./Auth.module.css";
+import axios from "axios";
 
 export default function Register() {
-	const handleNameChange = (value: string) => {
-		console.log(value);
+	const [formData, setFormData] = useState({
+		name: "",
+		email: "",
+		password: "",
+		cpf: "",
+		phone: "",
+	});
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const navigate = useNavigate();
+
+	const handleChange = (name: string, value: string) => {
+		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
-	const handleEmailChange = (value: string) => {
-		console.log(value);
-	};
-
-	const handlePasswordChange = (value: string) => {
-		console.log(value);
-	};
-
-	const handleCpfChange = (value: string) => {
-		console.log(value);
-	};
-
-	const handleSubmitClick = (e: FormEvent) => {
+	const handleRegister = async (e: FormEvent) => {
 		e.preventDefault();
 
-		alert("Fazendo cadastro...");
+		const requiredFields: (keyof typeof formData)[] = ["name", "email", "password", "cpf"];
+
+		const hasEmptyField = requiredFields.some((field) => !formData[field]);
+
+		if (hasEmptyField) {
+			alert("Os campos com asterisco são obrigatórios");
+			return;
+		}
+
+		try {
+			setIsLoading(true);
+
+			const response = await axios.post("http://localhost:3000/api/users/register", formData);
+			localStorage.setItem("prefilled_email", response.data.email);
+		} catch (error) {
+			if (axios.isAxiosError(error)) {
+				return alert(error.response?.data.message);
+			}
+
+			console.log(error);
+			alert("Aconteceu um erro inesperado");
+		} finally {
+			setIsLoading(false);
+		}
+
+		navigateToLogin();
+	};
+
+	const navigateToLogin = () => {
+		navigate("/login", { replace: true });
 	};
 
 	return (
@@ -33,39 +61,57 @@ export default function Register() {
 
 			<form className={styles.form}>
 				<Field
-					label="Nome"
+					label="Nome*"
 					type="text"
 					name="name"
 					placeholder="Digite o seu nome"
-					handleChange={handleNameChange}
+					value={formData.name}
+					handleChange={handleChange}
 				/>
 
 				<Field
-					label="Email"
+					label="Email*"
 					type="email"
 					name="email"
 					placeholder="Digite o seu email"
-					handleChange={handleEmailChange}
+					value={formData.email}
+					handleChange={handleChange}
 				/>
 
 				<Field
-					label="Senha"
+					label="Senha*"
 					type="password"
 					name="password"
 					placeholder="Digite a sua senha"
-					handleChange={handlePasswordChange}
+					value={formData.password}
+					handleChange={handleChange}
 				/>
 
 				<Field
-					label="CPF"
+					label="CPF*"
 					type="text"
 					name="cpf"
 					placeholder="Digite o seu CPF"
-					handleChange={handleCpfChange}
+					value={formData.cpf}
+					handleChange={handleChange}
+				/>
+
+				<Field
+					label="Celular"
+					type="tel"
+					name="phone"
+					placeholder="Digite o seu número (opcional)"
+					value={formData.phone}
+					handleChange={handleChange}
 				/>
 
 				<div className={styles.actions}>
-					<Button handleClick={handleSubmitClick}>Cadastrar</Button>
+					<Button
+						handleClick={handleRegister}
+						disabled={isLoading}
+					>
+						Cadastrar
+					</Button>
 					<p className={styles["action-paragraph"]}>
 						Já tem conta? <Link to="/login">Entrar</Link>
 					</p>
