@@ -14,16 +14,22 @@ export class UserController {
 			email: req.body.email,
 			passwordHash,
 			cpf: req.body.cpf,
-			phone: req.body.phone,
+			phone: req.body.phone || null,
 		};
 
 		const emailExists = await prisma.user.findFirst({ where: { email: bodyData.email } });
 
 		if (emailExists) {
-			throw new AppError("Esse email já existe", 400);
+			throw new AppError("Esse email já está cadastrado", 400);
 		}
 
-		const savedUser = await prisma.user.create({ data: bodyData, select: { name: true, email: true } });
+		const cpfExists = await prisma.user.findFirst({ where: { cpf: bodyData.cpf } });
+
+		if (cpfExists) {
+			throw new AppError("Esse CPF já está cadastrado", 400);
+		}
+
+		const savedUser = await prisma.user.create({ data: bodyData, select: { email: true } });
 
 		res.status(201).json(savedUser);
 	};
