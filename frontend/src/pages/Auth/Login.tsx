@@ -1,22 +1,62 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../../components/form/Button";
 import Field from "../../components/form/Field";
 import styles from "./Auth.module.css";
-import type { FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import axios from "axios";
 
 export default function Login() {
-	const handleEmailChange = (value: string) => {
-		console.log(value);
+	const [formData, setFormData] = useState({
+		email: "",
+		password: "",
+	});
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		const prefilledEmail = localStorage.getItem("prefilled_email");
+		if (prefilledEmail) {
+			setFormData((prev) => ({ ...prev, email: prefilledEmail }));
+		}
+	}, []);
+
+	const handleChange = (name: string, value: string) => {
+		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
-	const handlePasswordChange = (value: string) => {
-		console.log(value);
-	};
-
-	const handleSubmitClick = (e: FormEvent) => {
+	const handleLogin = async (e: FormEvent) => {
 		e.preventDefault();
 
-		alert("Fazendo login...");
+		const hasEmptyField = Object.values(formData).some(
+			(value) => value === "" || value === null || value === undefined
+		);
+
+		if (hasEmptyField) {
+			alert("Todos os campos são obrigatórios");
+			return;
+		}
+
+		try {
+			setIsLoading(true);
+
+			const response = await axios.post("http://localhost:3000/api/users/login", formData);
+			localStorage.setItem("user", JSON.stringify(response.data));
+		} catch (error) {
+			if (axios.isAxiosError(error)) {
+				return alert(error.response?.data.message);
+			}
+
+			console.error(error);
+			alert("Aconteceu um erro inesperado");
+		} finally {
+			setIsLoading(false);
+		}
+
+		navigateToHome();
+	};
+
+	const navigateToHome = () => {
+		navigate("/", { replace: true });
 	};
 
 	return (
@@ -25,23 +65,30 @@ export default function Login() {
 
 			<form className={styles.form}>
 				<Field
-					label="Email"
+					label="Email*"
 					type="email"
 					name="email"
 					placeholder="Digite o seu email"
-					handleChange={handleEmailChange}
+					value={formData.email}
+					handleChange={handleChange}
 				/>
 
 				<Field
-					label="Senha"
+					label="Senha*"
 					type="password"
 					name="password"
 					placeholder="Digite a sua senha"
-					handleChange={handlePasswordChange}
+					value={formData.password}
+					handleChange={handleChange}
 				/>
 
 				<div className={styles.actions}>
-					<Button handleClick={handleSubmitClick}>Entrar</Button>
+					<Button
+						handleClick={handleLogin}
+						disabled={isLoading}
+					>
+						Entrar
+					</Button>
 					<p className={styles["action-paragraph"]}>
 						Não tem conta? <Link to="/register">Cadastrar-se</Link>
 					</p>
