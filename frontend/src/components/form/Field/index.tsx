@@ -2,23 +2,25 @@ import styles from "./Field.module.css";
 
 interface FieldParams {
 	label: string;
-	type: string;
+	type: React.HTMLInputTypeAttribute;
 	name: string;
 	placeholder: string;
-	handleChange: (value: string) => void;
+	value: string;
+	handleChange: (name: string, value: string) => void;
 }
 
-export default function Field({ label, type, name, placeholder, handleChange }: FieldParams) {
+export default function Field({ label, type, name, placeholder, value, handleChange }: FieldParams) {
 	return (
-		<label className={styles.label}>
-			{label}
+		<div>
+			<label className={styles.label}>{label}</label>
 			<input
 				type={type}
 				name={name}
 				placeholder={placeholder}
-				onChange={(e) => handleChange && handleChange(e.target.value)}
+				value={value}
+				onChange={(e) => handleChange && handleChange(name, e.target.value)}
 				className={styles.input}
 			/>
-		</label>
+		</div>
 	);
 }
