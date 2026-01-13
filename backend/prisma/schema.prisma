@@ -7,13 +7,43 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  admin
+  client
+}
+
 model User {
-  id           Int    @id @default(autoincrement())
-  name         String @db.VarChar(50)
-  email        String @unique @db.VarChar(100)
-  passwordHash String @map("password_hash")
-  cpf          String @unique @db.VarChar(11)
+  id           Int     @id @default(autoincrement())
+  name         String  @db.VarChar(50)
+  email        String  @unique @db.VarChar(100)
+  passwordHash String  @map("password_hash")
+  cpf          String  @unique @db.VarChar(11)
   phone        String? @unique @db.VarChar(11)
+  role         Role    @default(client)
 
   @@map("users")
+}
+
+model Product {
+  id            Int            @id @default(autoincrement())
+  name          String         @db.VarChar(255)
+  description   String         @db.VarChar(500)
+  price         Decimal        @db.Decimal(10, 2)
+  stock         Int
+  productImages ProductImage[]
+
+  @@map("products")
+}
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  alt       String  @db.VarChar(100)
+  url       String
+  position  Int
+  isMain    Boolean @default(false) @map("is_main")
+  productId Int     @map("product_id")
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@unique([position, productId])
+  @@map("product_images")
 }
