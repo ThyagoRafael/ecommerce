@@ -1,17 +1,20 @@
 import jwt, { type JwtPayload, type SignOptions } from "jsonwebtoken";
 import { authConfig } from "../config/auth.js";
+import { AppError } from "../errors/AppError.js";
+import type { Role } from "../types/role.js";
 
 interface TokenPayload extends JwtPayload {
 	userId: number;
+	role: Role;
 }
 
 const options: SignOptions = {
 	...(authConfig.expiresIn && { expiresIn: authConfig.expiresIn }),
 };
 
-export function generateToken(userId: number) {
+export function generateToken(userId: number, role: Role) {
 	try {
-		const token = jwt.sign({ userId }, authConfig.secret, options);
+		const token = jwt.sign({ userId, role }, authConfig.secret, options);
 
 		return token;
 	} catch (error) {
@@ -27,6 +30,6 @@ export async function validateToken(token: string) {
 		return decoded as TokenPayload;
 	} catch (error) {
 		console.error(error);
-		throw new Error("Erro na verificação do token");
+		throw new AppError("Usuário não autorizado", 401);
 	}
 }
