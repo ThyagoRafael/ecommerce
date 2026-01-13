@@ -1,9 +1,9 @@
-import { type Request, type Response } from "express";
+import type { Request, Response } from "express";
 import { prisma } from "../config/prisma.js";
 
 import { encryptPassword, verifyPassword } from "../helpers/bcrypt.js";
 import { AppError } from "../errors/AppError.js";
-import { generateToken } from "../helpers/jwt.js";
+import { generateToken } from "../helpers/auth.js";
 
 export class UserController {
 	register = async (req: Request, res: Response) => {
@@ -17,13 +17,13 @@ export class UserController {
 			phone: req.body.phone || null,
 		};
 
-		const emailExists = await prisma.user.findFirst({ where: { email: bodyData.email } });
+		const emailExists = await prisma.user.findUnique({ where: { email: bodyData.email } });
 
 		if (emailExists) {
 			throw new AppError("Esse email já está cadastrado", 400);
 		}
 
-		const cpfExists = await prisma.user.findFirst({ where: { cpf: bodyData.cpf } });
+		const cpfExists = await prisma.user.findUnique({ where: { cpf: bodyData.cpf } });
 
 		if (cpfExists) {
 			throw new AppError("Esse CPF já está cadastrado", 400);
@@ -40,7 +40,7 @@ export class UserController {
 			password: req.body.password,
 		};
 
-		const userExists = await prisma.user.findFirst({ where: { email: bodyData.email } });
+		const userExists = await prisma.user.findUnique({ where: { email: bodyData.email } });
 
 		if (!userExists) {
 			throw new AppError("Esse email não está cadastrado", 404);
@@ -52,7 +52,7 @@ export class UserController {
 			throw new AppError("A senha está incorreta", 401);
 		}
 
-		const token = generateToken(userExists.id);
+		const token = generateToken(userExists.id, userExists.role);
 
 		res.status(200).json({ username: userExists.name, token });
 	};
