@@ -36,13 +36,13 @@ model Product {
 }
 
 model ProductImage {
-  id        Int     @id @default(autoincrement())
-  alt       String  @db.VarChar(100)
-  url       String
-  position  Int
-  isMain    Boolean @default(false) @map("is_main")
-  productId Int     @map("product_id")
-  product   Product @relation(fields: [productId], references: [id])
+  id          Int     @id @default(autoincrement())
+  description String  @db.VarChar(100)
+  url         String
+  publicId    String  @map("public_id")
+  position    Int
+  productId   Int     @map("product_id")
+  product     Product @relation(fields: [productId], references: [id])
 
   @@unique([position, productId])
   @@map("product_images")
