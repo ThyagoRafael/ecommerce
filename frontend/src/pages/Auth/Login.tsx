@@ -28,7 +28,7 @@ export default function Login() {
 		e.preventDefault();
 
 		const hasEmptyField = Object.values(formData).some(
-			(value) => value === "" || value === null || value === undefined
+			(value) => value === "" || value === null || value === undefined,
 		);
 
 		if (hasEmptyField) {
@@ -90,7 +90,7 @@ export default function Login() {
 						Entrar
 					</Button>
 					<p className={styles["action-paragraph"]}>
-						Não tem conta? <Link to="/register">Cadastrar-se</Link>
+						Não tem conta? <Link to="/cadastro">Cadastrar-se</Link>
 					</p>
 				</div>
 			</form>
