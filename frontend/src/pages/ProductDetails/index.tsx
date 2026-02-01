@@ -1,8 +1,7 @@
 import { useParams } from "react-router-dom";
-import imagemTeste from "../../assets/imagem-teste.png";
 import styles from "./ProductDetails.module.css";
 import Button from "../../components/form/Button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { Product } from "../../types/Product";
 import axios from "axios";
 import { formatPrice } from "../../utils/formatPrice";
@@ -10,6 +9,8 @@ import { formatPrice } from "../../utils/formatPrice";
 export default function ProductDetails() {
 	const [product, setProduct] = useState<Product | null>(null);
 	const { productId } = useParams();
+	const [currentIndex, setCurrentIndex] = useState(0);
+	const carouselRef = useRef(null);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -30,17 +31,40 @@ export default function ProductDetails() {
 		fetchData();
 	}, [productId]);
 
+	const handleScroll = () => {
+		if (carouselRef.current) {
+			const { scrollLeft, clientWidth } = carouselRef.current;
+
+			const newIndex = Math.round(scrollLeft / clientWidth);
+
+			setCurrentIndex(newIndex);
+		}
+	};
+
 	return (
 		<section className={styles.container}>
 			{product && (
 				<>
 					<header className={styles.productHeader}>
-						<figure className={styles.productImage}>
-							<img
-								src={imagemTeste}
-								alt="Nome do produto"
-							/>
-						</figure>
+						<div className={styles.carouselWrapper}>
+							<figure
+								className={styles.productImage}
+								ref={carouselRef}
+								onScroll={handleScroll}
+							>
+								{product.productImages.map((image) => (
+									<img
+										key={image.id}
+										src={image.url}
+										alt={product.name}
+									/>
+								))}
+							</figure>
+
+							<div className={styles.indicator}>
+								{currentIndex + 1} / {product.productImages.length}
+							</div>
+						</div>
 
 						<section className={styles.productContent}>
 							<h1 className={styles.productName}>{product.name}</h1>
