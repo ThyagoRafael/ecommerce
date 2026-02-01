@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import imagemTeste from "../../assets/imagem-teste.png";
 import styles from "./Home.module.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -43,7 +42,7 @@ export default function Home() {
 								<Link to={`/produtos/${product.id}`}>
 									<figure className={styles.productImage}>
 										<img
-											src={imagemTeste}
+											src={product.productImages[0].url}
 											alt="Nome do produto"
 										/>
 									</figure>
