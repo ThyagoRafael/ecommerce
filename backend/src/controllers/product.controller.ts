@@ -30,7 +30,21 @@ export class ProductController {
 	};
 
 	getAll = async (req: Request, res: Response) => {
-		const products = await prisma.product.findMany({ orderBy: { id: "asc" } });
+		const products = await prisma.product.findMany({
+			omit: {
+				description: true,
+				stock: true,
+			},
+			orderBy: { id: "asc" },
+			include: {
+				productImages: {
+					where: { position: 0 },
+					select: {
+						url: true,
+					},
+				},
+			},
+		});
 
 		res.status(200).json(products);
 	};
@@ -38,7 +52,14 @@ export class ProductController {
 	getOne = async (req: Request, res: Response) => {
 		const { productId } = req.params;
 
-		const product = await prisma.product.findUnique({ where: { id: Number(productId) } });
+		const product = await prisma.product.findUnique({
+			where: { id: Number(productId) },
+			include: {
+				productImages: {
+					orderBy: { position: "asc" },
+				},
+			},
+		});
 
 		if (!product) {
 			throw new AppError("Produto não encontrado", 404);
